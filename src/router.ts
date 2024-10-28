@@ -2,22 +2,34 @@ import { Router } from "express";
 import { body } from "express-validator";
 
 import { handleInputErrors } from "./modules/middleware";
+import {
+  createProduct,
+  deleteProduct,
+  getOneProduct,
+  getProducts,
+} from "./handlers/product";
+import { UPDATE_STATUS } from "@prisma/client";
+import {
+  createUpdate,
+  deleteUpdate,
+  getOneUpdate,
+  getUpdates,
+  updateUpdate,
+} from "./handlers/update";
 
 const router = Router();
 
 /**
  * Product
  */
-router.get("/product", (req, res) => {
-  res.json({ message: "product" });
-});
-router.get("/product/:id", (req, res) => {});
+router.get("/product", getProducts);
+router.get("/product/:id", getOneProduct);
 
 router.post(
   "/product",
   body("name").isString(),
   handleInputErrors,
-  (req, res) => {}
+  createProduct
 );
 
 router.put(
@@ -27,24 +39,25 @@ router.put(
   (req, res) => {}
 );
 
-router.delete("/product/:id", (req, res) => {});
+router.delete("/product/:id", deleteProduct);
 
 /**
  * Update
  */
 
-router.get("/update", (req, res) => {});
+router.get("/update", getUpdates);
 
-router.get("/update/:id", (req, res) => {});
+router.get("/update/:id", getOneUpdate);
 
 router.post(
   "/update",
-  body("title").isString(),
-  body("body").isString(),
+  body("title").exists().isString(),
+  body("body").exists().isString(),
   body("status").optional().isIn(Object.values(UPDATE_STATUS)),
   body("version").optional(),
+  body("productId").exists().isString(),
   handleInputErrors,
-  (req, res) => {}
+  createUpdate
 );
 
 router.put(
@@ -54,10 +67,10 @@ router.put(
   body("status").optional().isIn(Object.values(UPDATE_STATUS)),
   body("version").optional(),
   handleInputErrors,
-  (req, res) => {}
+  updateUpdate
 );
 
-router.delete("/update/:id", (req, res) => {});
+router.delete("/update/:id", deleteUpdate);
 
 /**
  * UpdatePoint
